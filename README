@@ -1,0 +1,122 @@
+Concurrent Ping (cping)
+Willem A. Schreuder (AC0KQ)
+This code is released under the GNU Public License Version 2
+
+Version 1.0 Jun 25, 2018
+Version 2.0 Jul 21, 2020 (shows ping times)
+Version 2.1 Aug 18, 2020 (add Windoze) 
+Version 2.2 Jun 24, 2021 (advance/reverse time)
+
+DESCRIPTION
+
+The program sends ICMP packets to a list of devices and shows the result as a
+color symbol, the number of hops and approximate repsonse in milliseconds.  A
+green colored symbol indicates a successful reply, while a red symbol shows that
+an error response was provided or no reply was received within one second.
+
+In numeric mode, a colored numerical value indicates the ping time.  The color
+indicates the multiplier, blue=1, green=10, yellow=100 and red=1000.  An X means
+no reply was received and a + means a late reply was received.
+
+A history of pings for each device is displayed.  The purpose of this display
+is to show the connectivity to each device over time. The maximum number of pings
+can be set at compile time and is 3600 pings by default. A sliding time window
+can be shown by using the left and right arrow keys, or the + and - keys to
+slide the window a minute at a time.  When a the window is not current, the time
+advance is stopped, but pings are still being recorded.  The END button makes
+the window current immediately.
+
+The program also has a continuous traceroute mode, which displays the path to a
+selected target updated every second.  This mode can be used to demonstrate
+changes to the routing to a device over time.
+
+The program uses the ncurses library and runs in text mode in a terminal window.
+The program will attempt to adapt the displays to the dimensions of the terminal
+window.
+
+The Raspberry Pi version of cping supports input from GPIO linked buttons using the
+piGPIO library.  This allows cping to be used on a Raspberry Pi with, for example 
+the Adafruit PiTFT displays which have buttons linked to GPIO ports.
+
+CONFIGURATION FILE
+
+The devices to ping are read from a configuration file.  The file can be set
+using the -f flag.  If the -f flag is omitted, cping will attempt to read
+cping.cfg in the current working directory, and then /etc/cping.cfg.
+
+Comment lines must have a # in the first column.  Comments can occur anywhere in
+the file.  Data lines consist of a hostname or IP address, optionally followed
+by a display name.  The display name consists of all nonblank characters after
+the hostname or IP address.  If no display name is provided the hostname or IP
+address is displayed instead.
+
+Headers can be added using a > in the first column.  Text following the > is
+displayed as a header and lines following the header will be indented.  If no
+text follows the > a blank line is displayed and subsequent lines are not
+indented.
+
+COMMAND LINE PARAMETERS
+
+-f  Specify the configuration file.
+-o  Specify output file.
+-b  Display light lettering on a dark background.
+-r  Scroll pings left to right.
+-a  Show hostname/ip address
+-n  Do not show hop count for pings.
+-p  Number of microseconds between pings to various devices.
+-s  Number of seconds between pings (default=1)
+-S  Start in silent mode
+-g  Enable GPIO switches
+-t  Show ping time stats
+-x  Show pings as numeric values
+-h  Display program help.
+
+KEY BINDINGS
+
+Up    Scroll Up
+Down  Scroll Down
+Left  Select previous router
+Right Select next router
+Enter Traceroute to the router
+ESC   Return to ping screen
+i     Invert colors
+s     Toggle sound for selected target
+S     Toggle sound for all
+a     Toggle display of host name/IP address
+b     Toggle display of number of hops
+0     Reset statistics
+h     Display help
+q     Quit program
+
+INSTALLING ON LINUX OR OSX
+
+Compile by simply doing 'make'.  To install do 'sudo make install'.  The
+makefile will use the setcap program to allow any user to run the program.  If
+the setcap program is not supported, the program needs to be run with root
+privileges in order to send ICMP packets.  The INSTDIR variable in the Makefile
+can be changed to install cping somewhere other than /usr/local/bin.
+
+On the Raspberry Pi, installing piGPIO will enable compiling with GPIO support.
+The command
+  sudo apt install libpigpio-dev
+will install the piGPIO libary.  Simply do 'make clean;sudo make install' to
+recompile the code with piGPIO.
+
+INSTALLING ON WINDOWS
+
+Extract cping.exe and msys-2.0.dll from the ZIP file anc copy these files to
+somewhere where the system can find it, probably C:\WINDOWS\system32.
+Then create a folder C:\etc and move cping.cfg there and edit it to suit.
+
+Note that cping is designed to run from the command line.  You can run it from
+a desktop icon by right clicking the cping.exe and doing 'Send to Desktop'.
+This will create a shortcut on the desktop.  Right click on the icon and do
+'Properties'.  You can then add the command line parameters of your choice and
+change the icon. 
+
+I compiled cping with Msys because it supports Unix style networking.  However,
+the ncurses library provided with Msys requires the Unix terminfo data which
+makes it less convenient under Windows.  Fortunately PDCurses provides an
+ncurses compatible version of curses that works well under Windows.  If you
+want to recompile cping under Msys, the pdcurses.h and pdcurses.a files I used
+are provided.   I compiled these files from source.
